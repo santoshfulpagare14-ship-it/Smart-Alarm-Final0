@@ -12,12 +12,17 @@ jobs:
           distribution: 'temurin'
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: 8.4
       - name: Reconstruct Folder Structure
         run: |
           mkdir -p gradle/wrapper
           mkdir -p app/src/main/java/com/example/smartalarm
           mkdir -p app/src/main/res/layout
           mkdir -p app/src/main/res/values
+          mkdir -p app/src/main/res/mipmap-hdpi
           mv gradle-wrapper.properties gradle/wrapper/gradle-wrapper.properties || true
           mv app_build.gradle app/build.gradle || true
           mv AndroidManifest.xml app/src/main/AndroidManifest.xml || true
@@ -29,10 +34,10 @@ jobs:
           mv AlarmService.java app/src/main/java/com/example/smartalarm/AlarmService.java || true
           mv AlarmRingActivity.java app/src/main/java/com/example/smartalarm/AlarmRingActivity.java || true
           mv BootReceiver.java app/src/main/java/com/example/smartalarm/BootReceiver.java || true
+          echo '<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108"><path android:fillColor="#3DDC84" android:pathData="M0,0h108v108h-108z"/></vector>' > app/src/main/res/mipmap-hdpi/ic_launcher.xml
+          cp app/src/main/res/mipmap-hdpi/ic_launcher.xml app/src/main/res/mipmap-hdpi/ic_launcher_round.xml || true
       - name: Build Debug APK
-        run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug
+        run: gradle assembleDebug
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
